@@ -51,9 +51,21 @@ function App() {
     resolver: yupResolver(yupSchema),
   });
 
-  function submit (values) {
+  async function submit (values) {
     console.log(values);
-  }
+    try {
+      await fetch("http://localhost:8000/addUser", {
+        method: "POST",
+        headers: {
+          "content-Type": "application/json"
+        },
+        body: JSON.stringify(values),
+      })
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
   return (
     <div className={`mh100 d-flex flex-column justify-content-center align-items-center`}>
       <form onSubmit={handleSubmit(submit)}>
