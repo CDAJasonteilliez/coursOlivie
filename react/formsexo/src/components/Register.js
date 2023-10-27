@@ -1,8 +1,11 @@
 import { useFieldArray, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useState } from "react";
 
-function App() {
+function Register({ setPage }) {
+  const [registerOk, setRegisterOk] = useState(false);
+
   const yupSchema = yup.object({
     name: yup
       .string()
@@ -68,7 +71,7 @@ function App() {
 
   function addHobby() {
     append({
-      values:"",
+      value:"",
       level:"beginner"
     });
   }
@@ -85,6 +88,8 @@ function App() {
     user.password = values.password;
     user.gender = values.gender;
     user.techno = values.techno;
+    let hobbies = {};
+    let newUser = {}
 
     try {
       const response = await fetch("http://localhost:8000/addUser", {
@@ -95,13 +100,39 @@ function App() {
         body: JSON.stringify(user),
       })
       if (response.ok) {
-        const newUser = await response.json();
+        newUser = await response.json();
         reset(defaultValues);
-        console.log(newUser);
       }
     } catch (error) {
       console.error(error);
     }
+    console.log(newUser);
+
+    values.hobbies.map(async (value) => {
+      hobbies.hobbies = value.value;
+      hobbies.idUser = newUser.id;
+      hobbies.niveau = value.level;
+      try {
+        const response = await fetch("http://localhost:8000/addHobbies", {
+          method: "POST",
+          headers: {
+            "content-Type": "application/json"
+          },
+          body: JSON.stringify(hobbies),
+        })
+        if (response.ok) {
+            const newHobbies = await response.json();
+            console.log(newHobbies);
+          }
+      } catch (error) {
+        console.error(error);
+      }
+    })
+    setRegisterOk(true);
+    setTimeout(() => {
+        setRegisterOk(false);
+        setPage("HomePage")
+    }, 3000);
   };
 
   return (
@@ -117,7 +148,7 @@ function App() {
           {errors.name && <p className="text-error">{errors.name.message}</p>}
         </div>
 
-        <div className="d-flex align-items-center mb20">
+        <div className="d-flex align-items-center flex-column mb20">
           <label htmlFor="email" className="mb10">Adresse mail</label>
           <input 
             type="text" 
@@ -127,7 +158,7 @@ function App() {
           {errors.email && <p className="text-error">{errors.email.message}</p>}
         </div>
 
-        <div className="d-flex align-items-center mb20">
+        <div className="d-flex align-items-center flex-column mb20">
           <label htmlFor="password" className="mb10">Password</label>
           <input 
             type="password" 
@@ -137,7 +168,7 @@ function App() {
           {errors.password && <p className="text-error">{errors.password.message}</p>}
         </div>
 
-        <div className="d-flex align-items-center mb20">
+        <div className="d-flex align-items-center flex-column mb20">
           <label htmlFor="confirmPassword" className="mb10">Confirme password</label>
           <input 
             type="password" 
@@ -147,7 +178,7 @@ function App() {
           {errors.confirmPassword && <p className="text-error">{errors.confirmPassword.message}</p>}
         </div>
 
-        <div className="d-flex align-items-center mb20">
+        <div className="d-flex align-items-center flex-column mb20">
           <label htmlFor="gender" className="mb10">gender</label>
           <div>
             <label htmlFor="man">man</label>
@@ -221,7 +252,7 @@ function App() {
 
         </div>
 
-        <div className="d-flex align-items-center mb20">
+        <div className="d-flex align-items-center flex-column mb20">
           <label htmlFor="cgu" className="mb10">CGU</label>
           <input 
             type="checkbox" 
@@ -231,7 +262,7 @@ function App() {
           {errors.cgu && <p className="text-error">{errors.cgu.message}</p>}
         </div>
 
-        <div className="d-flex align-items-center mb20">
+        <div className="d-flex align-items-center flex-column mb20">
           <label htmlFor="techno" className="mb10">techno préférée</label>
           <select
             id="techno"
@@ -245,9 +276,11 @@ function App() {
         </div>
 
         <button className="btn btn-primary">Submit</button>
+
+        {registerOk ? <p className="text-ok">L'inscription c'est effectué correctement, vous allez être redirigé sur la page d'accueil dans 3 secondes</p> : ""}
       </form>
     </div>
   );
 }
 
-export default App;
+export default Register;
