@@ -29,29 +29,32 @@ app.use((req, res, next) => {
 
 app.post("/addUser", (req,res) => {
     console.log(req.body);
-    const { username, email, password, techno, gender} = req.body;
-    const sql = "INSERT INTO users (username, email, password, techno, gender) VALUES (?, ?, ?, ?, ?)";
-    const values = [username, email, password, techno, gender];
-    connexion.query(sql, values, (err, resultat) => {
-        if (err) throw err;
-        console.log(resultat);
-        let userFromBack = req.body;
-        userFromBack.id = resultat.insertId;
-        res.status(200).json(userFromBack);
-    });
-})
+    const { username, email, password, techno, gender, hobbies} = req.body;
 
-app.post("/addHobbies", (req,res) => {
-    console.log(req.body);
-    const { hobbies, idUser, niveau, } = req.body;
-    const sql = "INSERT INTO hobbies (hobbies, idUser, niveau) VALUES (?, ?, ?)";
-    const values = [hobbies, idUser, niveau];
-    connexion.query(sql, values, (err, resultat) => {
+    // Verifie si l'email est déjà présent dans la base de données
+    let sql = "SELECT email FROM users WHERE email = ?";
+    
+    connexion.query(sql, [email], (err, resultat) => {
         if (err) throw err;
-        console.log(resultat);
-        let hobbiesFromBack = req.body;
-        hobbiesFromBack.id = resultat.insertId;
-        res.status(200).json(hobbiesFromBack);
+        if (resultat.length !== 0  ) {
+            console.log("test mail *****************************");
+            res.status(200).json({message: "Email existant"});
+        } else {
+        sql = "INSERT INTO users (username, email, password, techno, gender) VALUES (?, ?, ?, ?, ?)";
+        const values = [username, email, password, techno, gender];
+        connexion.query(sql, values, (err, resultat) => {
+            if (err) throw err;
+            const userFromBack = req.body;
+            userFromBack.id = resultat.insertId;
+            sql = "INSERT INTO hobbies (hobbies, idUser, niveau) VALUES (?, ?, ?)";
+            hobbies.map((hobbie) => {
+                const values2 = [hobbie.value, userFromBack.id, hobbie.level];
+                connexion.query(sql, values2, ((err, resultat) => {
+                    if (err) throw err;
+                }))
+            })
+            res.status(200).json(userFromBack);
+        });}
     });
 })
 

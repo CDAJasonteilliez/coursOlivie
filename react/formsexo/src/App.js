@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Register from "./components/Register";
 import HomePage from "./components/HomePage";
+import Header from "./components/Header";
+import Login from "./components/Login";
 
 
 function App() {
@@ -8,8 +10,10 @@ function App() {
 
     return(
         <>  
+            <Header setPage={setPage}/>
             {page === "Register" ? <Register setPage={setPage} /> :""}
             {page === "HomePage" ? <HomePage /> :""}
+            {page === "Login" ? <Login /> :""}
      
         </>
     )

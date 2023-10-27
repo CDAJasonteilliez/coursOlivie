@@ -5,6 +5,7 @@ import { useState } from "react";
 
 function Register({ setPage }) {
   const [registerOk, setRegisterOk] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
 
   const yupSchema = yup.object({
     name: yup
@@ -88,8 +89,7 @@ function Register({ setPage }) {
     user.password = values.password;
     user.gender = values.gender;
     user.techno = values.techno;
-    let hobbies = {};
-    let newUser = {}
+    user.hobbies = values.hobbies;
 
     try {
       const response = await fetch("http://localhost:8000/addUser", {
@@ -100,39 +100,21 @@ function Register({ setPage }) {
         body: JSON.stringify(user),
       })
       if (response.ok) {
-        newUser = await response.json();
-        reset(defaultValues);
+        const res = await response.json();
+        if (res.message === "Email existant") {
+            setFeedbackMessage("L'adresse mail est déjà utilisé.");
+        } else {
+            setFeedbackMessage("");
+            setRegisterOk(true);
+            setTimeout(() => {
+                reset(defaultValues);
+                setPage("Login");
+            }, 3000);
+        }
       }
     } catch (error) {
       console.error(error);
     }
-    console.log(newUser);
-
-    values.hobbies.map(async (value) => {
-      hobbies.hobbies = value.value;
-      hobbies.idUser = newUser.id;
-      hobbies.niveau = value.level;
-      try {
-        const response = await fetch("http://localhost:8000/addHobbies", {
-          method: "POST",
-          headers: {
-            "content-Type": "application/json"
-          },
-          body: JSON.stringify(hobbies),
-        })
-        if (response.ok) {
-            const newHobbies = await response.json();
-            console.log(newHobbies);
-          }
-      } catch (error) {
-        console.error(error);
-      }
-    })
-    setRegisterOk(true);
-    setTimeout(() => {
-        setRegisterOk(false);
-        setPage("HomePage")
-    }, 3000);
   };
 
   return (
@@ -277,7 +259,8 @@ function Register({ setPage }) {
 
         <button className="btn btn-primary">Submit</button>
 
-        {registerOk ? <p className="text-ok">L'inscription c'est effectué correctement, vous allez être redirigé sur la page d'accueil dans 3 secondes</p> : ""}
+        {registerOk ? <p className="text-ok">L'inscription c'est effectué correctement, vous allez être redirigé sur la page de connexion dans 3 secondes</p> : ""}
+        {feedbackMessage ? <p className="text-error">{feedbackMessage}</p> : ""}
       </form>
     </div>
   );
