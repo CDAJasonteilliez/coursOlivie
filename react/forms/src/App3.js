@@ -53,19 +53,30 @@ function App() {
 
   async function submit (values) {
     console.log(values);
+    let user = {};
+    user.username = values.name;
+    user.email = values.email;
+    user.password = values.password;
+    user.gender = values.gender;
+    user.techno = values.techno;
+
     try {
-      await fetch("http://localhost:8000/addUser", {
+      const response = await fetch("http://localhost:8000/addUser", {
         method: "POST",
         headers: {
           "content-Type": "application/json"
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(user),
       })
+      if (response.ok) {
+        const newUser = await response.json();
+        console.log(newUser);
+      }
     } catch (error) {
       console.error(error);
     }
   };
-  
+
   return (
     <div className={`mh100 d-flex flex-column justify-content-center align-items-center`}>
       <form onSubmit={handleSubmit(submit)}>

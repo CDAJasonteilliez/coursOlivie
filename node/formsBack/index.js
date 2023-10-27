@@ -29,13 +29,15 @@ app.use((req, res, next) => {
 
 app.post("/addUser", (req,res) => {
     console.log(req.body);
-    const { name, email, password} = req.body;
-    const sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
-    const values = [name, email, password];
+    const { username, email, password, techno, gender} = req.body;
+    const sql = "INSERT INTO users (username, email, password, techno, gender) VALUES (?, ?, ?, ?, ?)";
+    const values = [username, email, password, techno, gender];
     connexion.query(sql, values, (err, resultat) => {
         if (err) throw err;
         console.log(resultat);
-        res.end();
+        let userFromBack = req.body;
+        userFromBack.id = resultat.insertId;
+        res.status(200).json(userFromBack);
     });
 })
 
