@@ -31,9 +31,7 @@ app.post("/addUser", (req,res) => {
     console.log(req.body);
     const { username, email, password, techno, gender, hobbies} = req.body;
 
-    // Verifie si l'email est déjà présent dans la base de données
     let sql = "SELECT email FROM users WHERE email = ?";
-    
     connexion.query(sql, [email], (err, resultat) => {
         if (err) throw err;
         if (resultat.length !== 0  ) {
