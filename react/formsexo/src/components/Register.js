@@ -79,7 +79,6 @@ function Register({ setPage }) {
   }
 
   async function submit(values) {
-    console.log(values);
     let user = {};
     user.username = values.name;
     user.email = values.email;

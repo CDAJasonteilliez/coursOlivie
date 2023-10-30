@@ -6,7 +6,7 @@ const Profil = ({ auth }) => {
   useEffect(() => {
     const fetchData = async () => {
       let user = {};
-      user.idUsers = auth;
+      user.idUser = auth;
       try {
         const response = await fetch("http://localhost:8000/getUserProfil", {
           method: "POST",
@@ -17,6 +17,7 @@ const Profil = ({ auth }) => {
         });
         if (response.ok) {
           const res = await response.json();
+          console.log(res);
           setUserData(res);
         }
       } catch (error) {
@@ -24,7 +25,7 @@ const Profil = ({ auth }) => {
       }
     };
     fetchData();
-  });
+  }, []);
 
   return (
     <div
@@ -37,11 +38,12 @@ const Profil = ({ auth }) => {
           <p>mail : {userData[0].email}</p>
           <p>techno préféré : {userData[0].techno}</p>
           <h2>Hobbies</h2>
-          {userData.map((el, index) => (
-            <p key={index}>
-              {el.hobbies} : {el.level}
-            </p>
-          ))}
+          {userData[0].hobby &&
+            userData.map((el, index) => (
+              <p key={index}>
+                {el.hobby} : {el.level}
+              </p>
+            ))}
         </>
       )}
     </div>

@@ -31,7 +31,6 @@ const Login = ({ setPage, setAuth }) => {
   });
 
   async function submit(values) {
-    console.log(values);
     let user = {};
     user.email = values.email;
     user.password = values.password;
@@ -51,7 +50,6 @@ const Login = ({ setPage, setAuth }) => {
             color: "text-error",
           });
         } else {
-          console.log(res);
           setAuth(res.id);
           setFeedbackMessage({
             message:

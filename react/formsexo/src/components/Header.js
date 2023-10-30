@@ -42,7 +42,7 @@ export default function Header({ setPage, setAuth, auth }) {
         {auth !== -1 ? (
           <button onClick={() => logout()} className="mr10 btn btn-primary">
             <i className="fas fa-right-from-bracket mr10"></i>
-            <span>logout</span>
+            <span>Logout</span>
           </button>
         ) : (
           ""

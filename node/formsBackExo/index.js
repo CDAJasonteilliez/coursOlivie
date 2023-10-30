@@ -8,7 +8,7 @@ const connexion = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
-  database: "formlessonexo",
+  database: "formlesson",
 });
 
 connexion.connect((err) => {
@@ -43,9 +43,9 @@ app.post("/addUser", (req, res) => {
         if (err) throw err;
         const userFromBack = req.body;
         userFromBack.id = resultat.insertId;
-        sql = "INSERT INTO hobbies (hobbies, idUser, level) VALUES (?, ?, ?)";
+        sql = "INSERT INTO hobbies (hobby, level, idUser) VALUES (?, ?, ?)";
         hobbies.map((hobbie) => {
-          const values2 = [hobbie.value, userFromBack.id, hobbie.level];
+          const values2 = [hobbie.value, hobbie.level, userFromBack.id];
           connexion.query(sql, values2, (err, resultat) => {
             if (err) throw err;
           });
@@ -58,7 +58,6 @@ app.post("/addUser", (req, res) => {
 
 app.post("/getUserByEmail", (req, res) => {
   const { email, password } = req.body;
-
   let sql = "SELECT * FROM users WHERE email = ?";
   connexion.query(sql, [email], (err, resultat) => {
     if (err) throw err;
@@ -68,20 +67,19 @@ app.post("/getUserByEmail", (req, res) => {
       if (password !== resultat[0].password) {
         res.status(200).json({ message: "Connection refuse" });
       } else {
-        res.status(200).json({ id: resultat[0].idUsers });
+        res.status(200).json({ id: resultat[0].idUser });
       }
     }
   });
 });
 
 app.post("/getUserProfil", (req, res) => {
-  const { idUsers } = req.body;
-  console.log(idUsers);
+  const { idUser } = req.body;
   let sql =
-    "SELECT * FROM users INNER JOIN hobbies ON users.idUsers = hobbies.idUser WHERE users.idUsers = ? ";
-  connexion.query(sql, [idUsers], (err, resultat) => {
+    "SELECT users.idUser, username, email, techno, hobby, level FROM users LEFT JOIN hobbies ON users.idUser = hobbies.idUser WHERE users.idUser = ? ";
+  connexion.query(sql, [idUser], (err, resultat) => {
     if (err) throw err;
-    console.log(resultat);
+    console.log("mon resultat:", resultat);
     res.status(200).json(resultat);
   });
 });
