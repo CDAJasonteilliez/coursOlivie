@@ -1,13 +1,29 @@
-@use "../assets/styles/mixin.scss" as mixin;
+@use "../../../assets/styles/mixin.scss" as mixin;
 
 .serie {
     border-radius: 20px;
     height: 530px;
     cursor: pointer;
     .imgContainer {
+        position: relative;
         height: 450px;
         overflow: hidden;
+        display: flex;
+        justify-content: flex-end;
+        i {
+            margin-top: 10px;
+            margin-right: 10px;
+            z-index: 1;
+            color: rgb(63, 63, 63);
+            &:hover {
+                color: var(--error);
+            }
+        }
         img{
+            z-index: 0;
+            position: absolute;
+            top:0;
+            left: 0;
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
             width: 100%;

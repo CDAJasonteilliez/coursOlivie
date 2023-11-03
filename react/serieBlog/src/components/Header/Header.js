@@ -1,7 +1,7 @@
 import styles from "./Header.module.scss";
-import logo from "../assets/images/logo.png"
+import logo from "../../assets/images/logo.png"
 import { useState } from "react";
-import MobileMenu from "./MobileMenu";
+import MobileMenu from "./Components/MobileMenu";
 
 export default function Header() {
     const [showMenu, setShowMenu] = useState(false);
