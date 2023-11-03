@@ -1,5 +1,6 @@
 import express from "express";
 import mysql from "mysql2";
+import bcrypt from 'bcrypt';
 
 const app = express();
 const PORT = 8000;
@@ -27,8 +28,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post("/addUser", (req, res) => {
+app.post("/addUser", async (req, res) => {
   const { username, email, password, techno, gender, hobbies } = req.body;
+  const hashedPassword = await bcrypt.hash(password,10);
 
   let sql = "SELECT email FROM users WHERE email = ?";
   connexion.query(sql, [email], (err, resultat) => {
@@ -38,7 +40,7 @@ app.post("/addUser", (req, res) => {
     } else {
       sql =
         "INSERT INTO users (username, email, password, techno, gender) VALUES (?, ?, ?, ?, ?)";
-      const values = [username, email, password, techno, gender];
+      const values = [username, email, hashedPassword, techno, gender];
       connexion.query(sql, values, (err, resultat) => {
         if (err) throw err;
         const userFromBack = req.body;
@@ -56,15 +58,16 @@ app.post("/addUser", (req, res) => {
   });
 });
 
-app.post("/getUserByEmail", (req, res) => {
+app.post("/getUserByEmail",  (req, res) => {
   const { email, password } = req.body;
   let sql = "SELECT * FROM users WHERE email = ?";
-  connexion.query(sql, [email], (err, resultat) => {
+  connexion.query(sql, [email], async (err, resultat) => {
     if (err) throw err;
     if (resultat.length === 0) {
       res.status(200).json({ message: "Connection refuse" });
     } else {
-      if (password !== resultat[0].password) {
+      const isPasswordValid = await bcrypt.compare(password, resultat[0].password)
+      if (!isPasswordValid) {
         res.status(200).json({ message: "Connection refuse" });
       } else {
         res.status(200).json({ id: resultat[0].idUser });
